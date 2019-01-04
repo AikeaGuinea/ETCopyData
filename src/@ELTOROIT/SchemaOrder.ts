@@ -1,5 +1,7 @@
 import { ISchemaData, ISchemaDataParent } from "./Interfaces";
 import { OrgManager } from "./OrgManager";
+import { LogLevel, Util } from "./Util";
+import { DepGraph } from 'dependency-graph';
 
 export class SchemaOrder {
 	private orgManager: OrgManager;
@@ -13,23 +15,20 @@ export class SchemaOrder {
 		if (this.importOrder === null) {
 			this.removeMetadata();
 			this.importOrder = [];
-			let allSObjNames: string[] = this.getSObjNames();
 
-			while (allSObjNames.length > 0) {
-				const sObjectsFound: string[] = this.findSObjectsWithoutParents(allSObjNames);
-
-				// Add the newly found sObjects to the master list
-				this.importOrder = this.importOrder.concat(sObjectsFound);
-
-				// Since this object 'has been loaded' (technically, not quite true...
-				// but at least we know in which order they should load)...
-				// ... then the other sobjects should not require the sobjects we found.
-				this.removeSObjectFoundFromOthers(sObjectsFound);
-
-				// ... and should not be an object to check any more.
-				allSObjNames = this.removeSObjectFromChecks(allSObjNames, sObjectsFound);
-			}
+			Util.writeLog(`Finding import order for ${this.getSObjNames().length} objects: ${this.getSObjNames().join(', ')}`, LogLevel.TRACE);
+			let graph = new DepGraph({ circular: false });
+			this.getSObjNames().forEach( sObjName => {
+				graph.addNode(sObjName);
+			}); 
+			this.getSObjNames().forEach( sObjName => {
+				this.orgManager.discovery.getSObjects().get(sObjName).parentsRequired.forEach( parent => {
+					graph.addDependency(sObjName, parent);
+				});
+			}); 
+			this.importOrder = graph.overallOrder(false);
 		}
+		Util.writeLog(`Object import order: ${this.importOrder.join(', ')}`, LogLevel.TRACE);
 		return this.importOrder;
 	}
 
