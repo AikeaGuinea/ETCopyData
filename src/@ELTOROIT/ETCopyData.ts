@@ -199,6 +199,42 @@ export class ETCopyData {
 		});
 	}
 
+	public dumpData(overrideSettings: Settings, data: IETCopyData): Promise<void> {
+		Util.writeLog('About to dump the data.', LogLevel.WARN);
+		if (!Util.doesLogOutputsEachStep()) {
+			UX.create()
+				.then((ux) => {
+					ux.startSpinner("ETCopyData:Export");
+				})
+				.catch((err) => { Util.throwError(err); });
+		}
+		return new Promise((resolve, reject) => {
+			this.initializeETCopy(overrideSettings, data)
+				.then((value: IETCopyData) => {
+					data = value;
+				})
+				.then(() => {
+					// Export data
+					const promises = [];
+
+					promises.push(Exporter.all(data.orgs.get(WhichOrg.SOURCE), ""));
+					// promises.push(Exporter.exportMetadata(data.orgs.get(WhichOrg.DESTINATION), ""));
+
+					return Promise.all(promises);
+				})
+				// .then(() => {
+				// 	// Find import order for Destination
+				// 	const orgDestination: OrgManager = data.orgs.get(WhichOrg.DESTINATION);
+				// 	const importOrder = orgDestination.order.findImportOrder();
+				// 	Util.writeLog("sObjects should be processed in this order: " + importOrder, LogLevel.TRACE);
+				// })
+				.then(() => {
+					resolve();
+				})
+				.catch((err) => { Util.throwError(err); });
+		});
+	}
+
 	// tslint:disable-next-line:max-line-length
 	private setupOrg(data: IETCopyData, wo: WhichOrg): Promise<void> {
 		return new Promise((resolve, reject) => {

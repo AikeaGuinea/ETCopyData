@@ -169,19 +169,20 @@ This is the structure for each metadata sObject
 # Commands
 <!-- ET-AUTO-START: This section is auto-updated... -->
 <!-- commands -->
-* [`sfdx ETCopyData:compare`](#sfdx-et-copy-datacompare)
+* [`sfdx ETCopyData:Compare`](#sfdx-et-copy-data-compare)
 * [`sfdx ETCopyData:delete`](#sfdx-et-copy-datadelete)
+* [`sfdx ETCopyData:dump`](#sfdx-et-copy-datadump)
 * [`sfdx ETCopyData:export`](#sfdx-et-copy-dataexport)
 * [`sfdx ETCopyData:full`](#sfdx-et-copy-datafull)
 * [`sfdx ETCopyData:import`](#sfdx-et-copy-dataimport)
 
-## `sfdx ETCopyData:compare`
+## `sfdx ETCopyData:Compare`
 
 Checks the source and destination org for any differences in the sObject's metadata, this helps determine what data can be properly exported/imported.
 
 ```
 USAGE
-  $ sfdx ETCopyData:compare
+  $ sfdx ETCopyData:Compare
 
 OPTIONS
   -c, --configfolder=PATH                         Root folder to find the configuration file
@@ -191,7 +192,7 @@ OPTIONS
   --loglevel=(trace|debug|info|warn|error|fatal)  logging level for this command invocation
 ```
 
-_See code: [src/commands/ETCopyData/compare.ts](https://github.com/eltoroit/ETCopyData/blob/v0.4.3/src/commands/ETCopyData/compare.ts)_
+_See code: [src/commands/ETCopyData/Compare.ts](https://github.com/eltoroit/ETCopyData/blob/v0.4.3/src/commands/ETCopyData/Compare.ts)_
 
 ## `sfdx ETCopyData:delete`
 
@@ -210,6 +211,24 @@ OPTIONS
 ```
 
 _See code: [src/commands/ETCopyData/delete.ts](https://github.com/eltoroit/ETCopyData/blob/v0.4.3/src/commands/ETCopyData/delete.ts)_
+
+## `sfdx ETCopyData:dump`
+
+Dumps the data from the source org, and saves it in the destination folder so that it can be imported at a later time.
+
+```
+USAGE
+  $ sfdx ETCopyData:dump
+
+OPTIONS
+  -c, --configfolder=PATH                         Root folder to find the configuration file
+  -d, --orgdestination=(alias|username)           SFDX alias or username for the DESTINATION org
+  -s, --orgsource=(alias|username)                SFDX alias or username for the SOURCE org
+  --json                                          format output as json
+  --loglevel=(trace|debug|info|warn|error|fatal)  logging level for this command invocation
+```
+
+_See code: [src/commands/ETCopyData/dump.ts](https://github.com/eltoroit/ETCopyData/blob/v0.4.3/src/commands/ETCopyData/dump.ts)_
 
 ## `sfdx ETCopyData:export`
 
